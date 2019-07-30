@@ -3,13 +3,12 @@ package com.techmorshed.bluetoothlightonoff;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.app.ProgressDialog;
@@ -23,7 +22,7 @@ import java.util.UUID;
 public class LedControl extends AppCompatActivity {
 
     // Button btnOn, btnOff, btnDis;
-    Button On, Off, Discnt, Abt, read;
+    Button On, Off, Discnt, Abt, sent;
     String address = null;
     private ProgressDialog progress;
     BluetoothAdapter myBluetooth = null;
@@ -32,7 +31,7 @@ public class LedControl extends AppCompatActivity {
     //SPP UUID. Look for it
     static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    TextView tvRead;
+    EditText tvRead;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,10 +48,9 @@ public class LedControl extends AppCompatActivity {
         Discnt = (Button)findViewById(R.id.dis_btn);
         Abt = (Button)findViewById(R.id.abt_btn);
 
-        read = findViewById(R.id.read_btn);
+        sent = findViewById(R.id.sent_btn);
         tvRead = findViewById(R.id.readTv);
 
-        int str = 0;
 
 
         new ConnectBT().execute(); //Call the class to connect
@@ -86,26 +84,27 @@ public class LedControl extends AppCompatActivity {
         });
 
 
-        read.setOnClickListener(new View.OnClickListener() {
+        sent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                readValue();
+                sentValue();
             }
         });
 
 
     }
 
-    private void readValue() {
+    private void sentValue() {
 
+
+        String val = tvRead.getText().toString();
 
         if (btSocket!=null)
         {
             try
             {
 
-                int str =  btSocket.getInputStream().read();
-                tvRead.setText(str);
+                btSocket.getOutputStream().write(val.getBytes());
             }
             catch (IOException e)
             {
